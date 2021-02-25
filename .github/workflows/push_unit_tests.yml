@@ -1,0 +1,32 @@
+name: Swift
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    strategy:
+        matrix:
+          xcode: [12.0]
+          destination: ['platform=iOS Simulator,name=iPhone 11']
+    steps:
+      - run: swift --version
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: TDDStudy iOS Unit Tests
+        id: test_ios_app
+        run: |
+          xcodebuild clean build test -workspace TDDStudy.xcworkspace -scheme TDDStudy -destination "${destination}";
+        env: 
+          destination: ${{ matrix.destination }}
+
+      - name: Repository Framework Unit Tests
+        id: repository_tests
+        run: |
+          xcodebuild clean build test -workspace TDDStudy.xcworkspace -scheme Repository -destination "${destination}";
+        env: 
+          destination: ${{ matrix.destination }}
